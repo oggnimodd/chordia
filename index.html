@@ -124,36 +124,44 @@
         text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       }
 
-      /* --- MAJOR CHORDS: Bright, bold, uppercase --- */
+      /* --- CHANGE 1: Styling for the new chord notes element --- */
+      .chord-notes {
+        margin-top: 15px;
+        font-size: 1em;
+        font-weight: 400;
+        color: var(--roman-color);
+        letter-spacing: 2px;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+        word-spacing: 10px;
+      }
+
+      /* --- MAJOR CHORDS --- */
       .chord-card.chord-major {
         border-top-color: var(--major-color);
       }
-
       .chord-card.chord-major .chord-name {
         color: var(--major-color);
         text-transform: uppercase;
         font-weight: 900;
         filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.3));
       }
-
       .chord-card.chord-major .roman-numeral {
         text-transform: uppercase;
         font-weight: 700;
         color: #cccccc;
       }
 
-      /* --- MINOR CHORDS: Softer, rounded, different style --- */
+      /* --- MINOR CHORDS --- */
       .chord-card.chord-minor {
         border-top-color: var(--minor-color);
       }
-
       .chord-card.chord-minor .chord-name {
         color: var(--minor-color);
         font-weight: 600;
         font-style: italic;
         filter: drop-shadow(0 0 10px rgba(255, 107, 157, 0.3));
       }
-
       .chord-card.chord-minor .roman-numeral {
         text-transform: lowercase;
         font-weight: 300;
@@ -165,51 +173,48 @@
       .chord-card.chord-secondary {
         border-top-color: var(--secondary-color);
       }
-
       .chord-card.chord-secondary .chord-name {
         color: var(--secondary-color);
         font-weight: 800;
         filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.3));
       }
-
       .chord-card.chord-secondary .roman-numeral {
         font-size: 1.2em;
         font-weight: 600;
         color: #bbbbbb;
       }
 
-      /* --- Desktop: Keep all in one row --- */
+      /* --- Media Queries --- */
       @media (min-width: 769px) {
         .chords-display {
           flex-wrap: nowrap;
         }
-
         .chord-card {
           flex: 1;
           min-width: 0;
         }
       }
 
-      /* --- Mobile: 3 columns, 2 rows --- */
       @media (max-width: 768px) {
         .container {
           padding: 30px 20px;
         }
-
         .chords-display {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 15px;
         }
-
         .chord-card {
           padding: 20px 15px;
           min-width: 0;
           max-width: none;
         }
-
         .chord-name {
           font-size: 2.2em;
+        }
+        .chord-notes {
+          font-size: 0.9em;
+          margin-top: 12px;
         }
       }
 
@@ -217,15 +222,16 @@
         .container {
           padding: 25px 15px;
         }
-
         .chords-display {
           gap: 12px;
         }
-
         .chord-name {
           font-size: 1.9em;
         }
-
+        .chord-notes {
+          font-size: 0.8em;
+          letter-spacing: 1px;
+        }
         .key-selector {
           font-size: 1.1em;
           padding: 12px 16px;
@@ -237,7 +243,6 @@
         transform: none !important;
         animation: none !important;
       }
-
       .loading .chord-card:hover {
         transform: none !important;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
@@ -262,29 +267,36 @@
       </select>
 
       <div id="chords-display" class="chords-display">
+        <!-- CHANGE 2: Added the chord-notes div to each card -->
         <div class="chord-card">
           <div class="roman-numeral">I</div>
           <div class="chord-name">C</div>
+          <div class="chord-notes">C E G</div>
         </div>
         <div class="chord-card">
           <div class="roman-numeral">ii</div>
           <div class="chord-name">Dm</div>
+          <div class="chord-notes">D F A</div>
         </div>
         <div class="chord-card" id="iii-card">
           <div class="roman-numeral">iii</div>
           <div class="chord-name">Em</div>
+          <div class="chord-notes">E G B</div>
         </div>
         <div class="chord-card">
           <div class="roman-numeral">IV</div>
           <div class="chord-name">F</div>
+          <div class="chord-notes">F A C</div>
         </div>
         <div class="chord-card">
           <div class="roman-numeral">V</div>
           <div class="chord-name">G</div>
+          <div class="chord-notes">G B D</div>
         </div>
         <div class="chord-card">
           <div class="roman-numeral">vi</div>
           <div class="chord-name">Am</div>
+          <div class="chord-notes">A C E</div>
         </div>
       </div>
     </div>
@@ -322,6 +334,19 @@
       const chordCards = document.querySelectorAll(".chord-card");
       const iiiCard = document.getElementById("iii-card");
 
+      // --- CHANGE 3: New helper function to calculate chord notes ---
+      function getChordNotes(rootNote, quality) {
+        const rootIndex = notes.indexOf(rootNote);
+        const thirdIndex = (rootIndex + (quality === "major" ? 4 : 3)) % 12;
+        const fifthIndex = (rootIndex + 7) % 12;
+
+        const root = notes[rootIndex];
+        const third = notes[thirdIndex];
+        const fifth = notes[fifthIndex];
+
+        return `${root} ${third} ${fifth}`;
+      }
+
       // --- CORE LOGIC ---
       function updateChords() {
         const selectedKey = keySelect.value;
@@ -336,13 +361,21 @@
         }
 
         chordCards.forEach((card, i) => {
+          const rootNote = scaleNotes[i];
+          const quality = chordQualities[i];
+
           card.querySelector(".roman-numeral").textContent = romanNumerals[i];
           card.querySelector(".chord-name").textContent =
-            scaleNotes[i] + chordSuffixes[i];
-          card.className = `chord-card chord-${chordQualities[i]}`;
+            rootNote + chordSuffixes[i];
+          // Update the chord notes display
+          card.querySelector(".chord-notes").textContent = getChordNotes(
+            rootNote,
+            quality,
+          );
+
+          card.className = `chord-card chord-${quality}`;
         });
 
-        // Add the ID back to the iii-card after its class is reset
         iiiCard.id = "iii-card";
       }
 
@@ -350,20 +383,23 @@
       function toggleSecondaryDominant() {
         const romanEl = iiiCard.querySelector(".roman-numeral");
         const nameEl = iiiCard.querySelector(".chord-name");
+        const notesEl = iiiCard.querySelector(".chord-notes");
+        const rootNote = nameEl.textContent.replace("m", "");
 
-        // Check current state by looking at the roman numeral
         if (romanEl.textContent === "iii") {
           // Change to Secondary Dominant (V/vi)
           romanEl.textContent = "V/vi";
-          nameEl.textContent = nameEl.textContent.replace("m", ""); // Remove 'm' to make it major
+          nameEl.textContent = rootNote;
+          notesEl.textContent = getChordNotes(rootNote, "major"); // Update notes to major
           iiiCard.className = "chord-card chord-secondary";
-          iiiCard.id = "iii-card"; // Ensure ID persists
+          iiiCard.id = "iii-card";
         } else {
           // Change back to diatonic iii
           romanEl.textContent = "iii";
-          nameEl.textContent += "m"; // Add 'm' back to make it minor
+          nameEl.textContent = rootNote + "m";
+          notesEl.textContent = getChordNotes(rootNote, "minor"); // Update notes to minor
           iiiCard.className = "chord-card chord-minor";
-          iiiCard.id = "iii-card"; // Ensure ID persists
+          iiiCard.id = "iii-card";
         }
       }
 
@@ -372,12 +408,8 @@
       iiiCard.addEventListener("click", toggleSecondaryDominant);
 
       // --- INITIALIZATION ---
-      // Add loading class to prevent flash
       document.body.classList.add("loading");
-
       updateChords();
-
-      // Remove loading class after a brief moment to enable transitions
       setTimeout(() => {
         document.body.classList.remove("loading");
       }, 100);
