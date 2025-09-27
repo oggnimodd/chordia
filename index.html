@@ -7,21 +7,32 @@
     <style>
       /* --- Color & Style Variables --- */
       :root {
-        --bg-color: #2c3e50;
-        --card-bg: #34495e;
-        --text-color: #ecf0f1;
-        --roman-color: #95a5a6;
+        --bg-color: #1a1a1a;
+        --card-bg: #2a2a2a;
+        --text-color: #ffffff;
+        --roman-color: #999999;
 
-        /* Chord Quality Colors */
-        --major-color: #3498db; /* Blue */
-        --minor-color: #9b59b6; /* Amethyst Purple */
-        --secondary-color: #1abc9c; /* Teal for Secondary Dominant */
+        /* Chord Quality Colors - High contrast */
+        --major-color: #00d4ff; /* Bright cyan */
+        --minor-color: #ff6b9d; /* Bright pink */
+        --secondary-color: #00ff88; /* Bright green */
+
+        /* Effects */
+        --shadow-color: rgba(0, 0, 0, 0.6);
+      }
+
+      * {
+        box-sizing: border-box;
       }
 
       body {
         font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-          Arial, sans-serif;
+          "SF Pro Display",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
         background-color: var(--bg-color);
         color: var(--text-color);
         display: flex;
@@ -30,106 +41,194 @@
         min-height: 100vh;
         margin: 0;
         padding: 20px;
-        box-sizing: border-box;
       }
 
       /* --- Main App Container --- */
       .container {
-        background-color: var(--card-bg);
+        background: var(--card-bg);
         padding: 40px;
-        border-radius: 15px;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px var(--shadow-color);
         text-align: center;
-        max-width: 950px;
+        max-width: 1200px;
         width: 100%;
       }
 
       /* --- Key Selector Dropdown --- */
       .key-selector {
-        font-size: 1.2em;
-        padding: 10px 15px;
-        border-radius: 8px;
-        border: 2px solid var(--major-color);
-        background-color: var(--bg-color);
+        font-size: 1.3em;
+        font-weight: 600;
+        padding: 15px 20px;
+        border-radius: 12px;
+        border: none;
+        background: var(--bg-color);
         color: var(--text-color);
         margin-bottom: 40px;
         cursor: pointer;
+        outline: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s ease;
+      }
+
+      .key-selector:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
       }
 
       /* --- Chords Display Area --- */
       .chords-display {
         display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
+        gap: 20px;
         justify-content: center;
+        flex-wrap: wrap;
       }
 
       .chord-card {
-        background-color: var(--bg-color);
-        border-radius: 10px;
-        padding: 20px;
-        border-top: 5px solid transparent;
-        flex: 1 1 100px;
-        min-width: 100px;
-        max-width: 150px;
-        transition:
-          transform 0.2s ease,
-          box-shadow 0.2s ease,
-          border-top-color 0.3s ease;
+        background: var(--bg-color);
+        border-radius: 15px;
+        padding: 25px 20px;
+        border-top: 6px solid transparent;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        flex: 1;
+        min-width: 140px;
+        max-width: 180px;
       }
 
       .chord-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
       }
 
-      /* --- CHANGE 1: Make the third card clickable --- */
       #iii-card {
         cursor: pointer;
       }
 
+      #iii-card:hover {
+        transform: translateY(-10px) scale(1.05);
+      }
+
       .roman-numeral {
-        font-size: 1.5em;
-        font-weight: bold;
+        font-size: 1.4em;
+        font-weight: 300;
         color: var(--roman-color);
-        margin-bottom: 10px;
+        margin-bottom: 12px;
+        letter-spacing: 1px;
       }
 
       .chord-name {
-        font-size: 2.2em;
-        font-weight: bold;
-        transition: color 0.3s ease;
+        font-size: 2.8em;
+        font-weight: 900;
+        transition: all 0.3s ease;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       }
 
-      /* --- Chord Quality Styling --- */
-      .chord-card.chord-major .chord-name {
-        color: var(--major-color);
-      }
+      /* --- MAJOR CHORDS: Bright, bold, uppercase --- */
       .chord-card.chord-major {
         border-top-color: var(--major-color);
       }
 
-      .chord-card.chord-minor .chord-name {
-        color: var(--minor-color);
+      .chord-card.chord-major .chord-name {
+        color: var(--major-color);
+        text-transform: uppercase;
+        font-weight: 900;
+        filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.3));
       }
+
+      .chord-card.chord-major .roman-numeral {
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #cccccc;
+      }
+
+      /* --- MINOR CHORDS: Softer, rounded, different style --- */
       .chord-card.chord-minor {
         border-top-color: var(--minor-color);
       }
 
-      .chord-card.chord-secondary .chord-name {
-        color: var(--secondary-color);
+      .chord-card.chord-minor .chord-name {
+        color: var(--minor-color);
+        font-weight: 600;
+        font-style: italic;
+        filter: drop-shadow(0 0 10px rgba(255, 107, 157, 0.3));
       }
+
+      .chord-card.chord-minor .roman-numeral {
+        text-transform: lowercase;
+        font-weight: 300;
+        font-style: italic;
+        color: #aaaaaa;
+      }
+
+      /* --- SECONDARY DOMINANT --- */
       .chord-card.chord-secondary {
         border-top-color: var(--secondary-color);
       }
 
-      /* --- Mobile Responsiveness --- */
-      @media (max-width: 600px) {
-        .container {
-          padding: 20px;
+      .chord-card.chord-secondary .chord-name {
+        color: var(--secondary-color);
+        font-weight: 800;
+        filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.3));
+      }
+
+      .chord-card.chord-secondary .roman-numeral {
+        font-size: 1.2em;
+        font-weight: 600;
+        color: #bbbbbb;
+      }
+
+      /* --- Desktop: Keep all in one row --- */
+      @media (min-width: 769px) {
+        .chords-display {
+          flex-wrap: nowrap;
         }
+
+        .chord-card {
+          flex: 1;
+          min-width: 0;
+        }
+      }
+
+      /* --- Mobile: 3 columns, 2 rows --- */
+      @media (max-width: 768px) {
+        .container {
+          padding: 30px 20px;
+        }
+
+        .chords-display {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 15px;
+        }
+
+        .chord-card {
+          padding: 20px 15px;
+          min-width: 0;
+          max-width: none;
+        }
+
         .chord-name {
-          font-size: 1.8em;
+          font-size: 2.2em;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          padding: 25px 15px;
+        }
+
+        .chords-display {
+          gap: 12px;
+        }
+
+        .chord-name {
+          font-size: 1.9em;
+        }
+
+        .key-selector {
+          font-size: 1.1em;
+          padding: 12px 16px;
         }
       }
     </style>
@@ -160,7 +259,6 @@
           <div class="roman-numeral">ii</div>
           <div class="chord-name">Dm</div>
         </div>
-        <!-- CHANGE 2: Added an ID to the third card for easy access -->
         <div class="chord-card" id="iii-card">
           <div class="roman-numeral">iii</div>
           <div class="chord-name">Em</div>
@@ -237,7 +335,7 @@
         iiiCard.id = "iii-card";
       }
 
-      // --- CHANGE 3: Click listener to toggle the iii card ---
+      // --- Click listener to toggle the iii card ---
       function toggleSecondaryDominant() {
         const romanEl = iiiCard.querySelector(".roman-numeral");
         const nameEl = iiiCard.querySelector(".chord-name");
