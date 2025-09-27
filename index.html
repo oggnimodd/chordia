@@ -231,6 +231,17 @@
           padding: 12px 16px;
         }
       }
+
+      .loading * {
+        transition: none !important;
+        transform: none !important;
+        animation: none !important;
+      }
+
+      .loading .chord-card:hover {
+        transform: none !important;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
+      }
     </style>
   </head>
   <body>
@@ -361,7 +372,15 @@
       iiiCard.addEventListener("click", toggleSecondaryDominant);
 
       // --- INITIALIZATION ---
+      // Add loading class to prevent flash
+      document.body.classList.add("loading");
+
       updateChords();
+
+      // Remove loading class after a brief moment to enable transitions
+      setTimeout(() => {
+        document.body.classList.remove("loading");
+      }, 100);
     </script>
   </body>
 </html>
