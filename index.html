@@ -462,6 +462,9 @@
           const noteSpans = card.querySelectorAll(".note");
           noteSpans.forEach((span) => span.classList.remove("highlighted"));
         });
+
+        // Remove active state from vii button
+        viiToggle.classList.remove("active");
       }
 
       function handleChordClick(event) {
@@ -585,12 +588,14 @@
         // If clicking the same note, deselect it
         if (selectedNote === viiNote) {
           clearNoteSelection();
+          viiToggle.classList.remove("active");
           return;
         }
         
         // Update state and highlight
         selectedNote = viiNote;
         highlightChordsContainingNote(viiNote, null);
+        viiToggle.classList.add("active");
       });
 
       fullscreenToggle.addEventListener("click", function () {
