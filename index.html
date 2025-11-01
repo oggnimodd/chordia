@@ -297,6 +297,7 @@
           <option value="B">B</option>
         </select>
         <button id="secondary-toggle" class="toggle-button">V/vi</button>
+        <button id="vii-toggle" class="toggle-button">vii°</button>
       </div>
 
       
@@ -368,6 +369,7 @@
       const chordCards = document.querySelectorAll(".chord-card");
       const iiiCard = document.getElementById("iii-card");
       const secondaryToggle = document.getElementById("secondary-toggle");
+      const viiToggle = document.getElementById("vii-toggle");
       let selectedNote = null;
 
       // --- HELPER FUNCTIONS ---
@@ -407,13 +409,16 @@
           card.classList.remove("matching", "non-matching");
           noteSpans.forEach((span) => span.classList.remove("highlighted"));
 
-          // Highlight if the selected note is the root of this chord 
+          // Check if the selected note is the root of this chord 
           // or if the selected note is contained in this chord's notes
-          if (rootNote === note || chordNotes.includes(note)) {
+          const isRootNote = notesAreEquivalent(rootNote, note);
+          const containsNote = chordNotes.some(chordNote => notesAreEquivalent(chordNote, note));
+          
+          if (isRootNote || containsNote) {
             card.classList.add("matching");
             // Highlight the specific notes that match
             noteSpans.forEach((span) => {
-              if (span.dataset.note === note) {
+              if (notesAreEquivalent(span.dataset.note, note)) {
                 span.classList.add("highlighted");
               }
             });
@@ -451,6 +456,22 @@
         // Update state and highlight
         selectedNote = rootNote;
         highlightChordsContainingNote(rootNote);
+      }
+
+      function getViiNote() {
+        const selectedKey = keySelect.value;
+        const rootIndex = notes.indexOf(selectedKey);
+        
+        // Calculate vii note (leading tone, one semitone below tonic)
+        const viiIndex = (rootIndex - 1 + 12) % 12;
+        return notes[viiIndex];
+      }
+      
+      // Helper function to check if two notes are enharmonically equivalent
+      function notesAreEquivalent(note1, note2) {
+        // For simplicity, just check exact match for now
+        // Could be expanded to handle enharmonics like C#/Db
+        return note1 === note2;
       }
 
       // --- CORE LOGIC ---
@@ -533,6 +554,20 @@
         toggleSecondaryDominant();
       });
 
+      viiToggle.addEventListener("click", function () {
+        const viiNote = getViiNote();
+        
+        // If clicking the same note, deselect it
+        if (selectedNote === viiNote) {
+          clearNoteSelection();
+          return;
+        }
+        
+        // Update state and highlight
+        selectedNote = viiNote;
+        highlightChordsContainingNote(viiNote);
+      });
+
       // Add click listeners to each chord card
       chordCards.forEach(card => {
         card.addEventListener("click", handleChordClick);
@@ -542,10 +577,11 @@
 
       // Add click-outside listener to clear selection
       document.addEventListener("click", function(event) {
-        // Check if click is outside any chord card
+        // Check if click is outside any chord card and not on the vii button
         const isChordCard = event.target.closest(".chord-card");
+        const isViiButton = event.target === viiToggle || viiToggle.contains(event.target);
         
-        if (!isChordCard && selectedNote) {
+        if (!isChordCard && !isViiButton && selectedNote) {
           clearNoteSelection();
         }
       });
