@@ -33,25 +33,19 @@
           "Segoe UI",
           Roboto,
           sans-serif;
-        background-color: var(--bg-color);
+        background-color: var(--card-bg);
         color: var(--text-color);
-        display: flex;
-        justify-content: center;
-        align-items: center;
         min-height: 100vh;
         margin: 0;
         padding: 20px;
       }
 
-      /* --- Main App Container --- */
-      .container {
-        background: var(--card-bg);
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px var(--shadow-color);
+      /* --- Main App --- */
+      .app {
         text-align: center;
         max-width: 1200px;
-        width: 100%;
+        margin: 0 auto;
+        padding-top: 20px;
       }
 
       /* --- Key Selector Dropdown --- */
@@ -120,7 +114,7 @@
       .chord-card {
         background: var(--bg-color);
         border-radius: 15px;
-        padding: 25px 20px;
+        padding: 25px 0px;
         border-top: 6px solid transparent;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
@@ -274,7 +268,7 @@
     </style>
   </head>
   <body>
-    <div class="container">
+    <div class="app">
       <div class="toggle-container">
         <select id="key-select" class="key-selector">
           <option value="C">C</option>
