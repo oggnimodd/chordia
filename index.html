@@ -63,11 +63,48 @@
         border: none;
         background: var(--bg-color);
         color: var(--text-color);
-        margin-bottom: 40px;
+        margin-bottom: 0;
         cursor: pointer;
         outline: none;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         transition: all 0.2s ease;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: none;
+        text-align: center;
+        text-align-last: center;
+      }
+
+      /* --- Toggle Button --- */
+      .toggle-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      .toggle-button {
+        font-size: 1.1em;
+        font-weight: 600;
+        padding: 15px 25px;
+        border-radius: 12px;
+        border: none;
+        background: var(--bg-color);
+        color: var(--text-color);
+        cursor: pointer;
+        outline: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .toggle-button.active {
+        background: #00cc77;
+        color: var(--bg-color);
       }
 
   
@@ -95,9 +132,7 @@
 
     
 
-      #iii-card {
-        cursor: pointer;
-      }
+      
 
       
 
@@ -240,20 +275,23 @@
   </head>
   <body>
     <div class="container">
-      <select id="key-select" class="key-selector">
-        <option value="C">C</option>
-        <option value="C#">C# / Db</option>
-        <option value="D">D</option>
-        <option value="D#">D# / Eb</option>
-        <option value="E">E</option>
-        <option value="F">F</option>
-        <option value="F#">F# / Gb</option>
-        <option value="G">G</option>
-        <option value="G#">G# / Ab</option>
-        <option value="A">A</option>
-        <option value="A#">A# / Bb</option>
-        <option value="B">B</option>
-      </select>
+      <div class="toggle-container">
+        <select id="key-select" class="key-selector">
+          <option value="C">C</option>
+          <option value="C#">C# / Db</option>
+          <option value="D">D</option>
+          <option value="D#">D# / Eb</option>
+          <option value="E">E</option>
+          <option value="F">F</option>
+          <option value="F#">F# / Gb</option>
+          <option value="G">G</option>
+          <option value="G#">G# / Ab</option>
+          <option value="A">A</option>
+          <option value="A#">A# / Bb</option>
+          <option value="B">B</option>
+        </select>
+        <button id="secondary-toggle" class="toggle-button">V/vi</button>
+      </div>
 
       <div id="chords-display" class="chords-display">
         <!-- CHANGE 2: Added the chord-notes div to each card -->
@@ -322,6 +360,7 @@
       const keySelect = document.getElementById("key-select");
       const chordCards = document.querySelectorAll(".chord-card");
       const iiiCard = document.getElementById("iii-card");
+      const secondaryToggle = document.getElementById("secondary-toggle");
 
       // --- CHANGE 3: New helper function to calculate chord notes ---
       function getChordNotes(rootNote, quality) {
@@ -368,33 +407,38 @@
         iiiCard.id = "iii-card";
       }
 
-      // --- Click listener to toggle the iii card ---
+      // --- Toggle function for the V/vi secondary dominant ---
       function toggleSecondaryDominant() {
         const romanEl = iiiCard.querySelector(".roman-numeral");
         const nameEl = iiiCard.querySelector(".chord-name");
         const notesEl = iiiCard.querySelector(".chord-notes");
         const rootNote = nameEl.textContent.replace("m", "");
 
-        if (romanEl.textContent === "iii") {
-          // Change to Secondary Dominant (V/vi)
+        if (secondaryToggle.classList.contains("active")) {
+          // Show Secondary Dominant (V/vi)
           romanEl.textContent = "V/vi";
           nameEl.textContent = rootNote;
           notesEl.textContent = getChordNotes(rootNote, "major"); // Update notes to major
           iiiCard.className = "chord-card chord-secondary";
           iiiCard.id = "iii-card";
+          secondaryToggle.textContent = "V/vi";
         } else {
-          // Change back to diatonic iii
+          // Show diatonic iii
           romanEl.textContent = "iii";
           nameEl.textContent = rootNote + "m";
           notesEl.textContent = getChordNotes(rootNote, "minor"); // Update notes to minor
           iiiCard.className = "chord-card chord-minor";
           iiiCard.id = "iii-card";
+          secondaryToggle.textContent = "V/vi";
         }
       }
 
       // --- EVENT LISTENERS ---
       keySelect.addEventListener("change", updateChords);
-      iiiCard.addEventListener("click", toggleSecondaryDominant);
+      secondaryToggle.addEventListener("click", function() {
+        secondaryToggle.classList.toggle("active");
+        toggleSecondaryDominant();
+      });
 
       // --- INITIALIZATION ---
       document.body.classList.add("loading");
