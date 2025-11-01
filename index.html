@@ -45,9 +45,9 @@
       }
 
       .key-selector {
-        font-size: 1em;
+        font-size: 0.9em;
         font-weight: 600;
-        padding: 10px 20px;
+        padding: 8px 16px;
         border-radius: 12px;
         border: none;
         background: var(--bg-color);
@@ -71,13 +71,13 @@
         align-items: center;
         justify-content: center;
         gap: 20px;
-        margin-bottom: 40px;
+        margin-bottom: 20px;
       }
 
       .toggle-button {
-        font-size: 1em;
+        font-size: 0.9em;
         font-weight: 600;
-        padding: 10px 20px;
+        padding: 8px 16px;
         border-radius: 12px;
         border: none;
         background: var(--bg-color);
@@ -294,6 +294,7 @@
         </select>
         <button id="secondary-toggle" class="toggle-button">V/vi</button>
         <button id="vii-toggle" class="toggle-button">vii°</button>
+        <button id="fullscreen-toggle" class="toggle-button">FS</button>
       </div>
 
       
@@ -366,6 +367,7 @@
       const iiiCard = document.getElementById("iii-card");
       const secondaryToggle = document.getElementById("secondary-toggle");
       const viiToggle = document.getElementById("vii-toggle");
+      const fullscreenToggle = document.getElementById("fullscreen-toggle");
       let selectedNote = null;
 
       // --- HELPER FUNCTIONS ---
@@ -562,6 +564,16 @@
         // Update state and highlight
         selectedNote = viiNote;
         highlightChordsContainingNote(viiNote);
+      });
+
+      fullscreenToggle.addEventListener("click", function () {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(err => {
+            console.log(`Error attempting to enable fullscreen: ${err.message}`);
+          });
+        } else {
+          document.exitFullscreen();
+        }
       });
 
       // Add click listeners to each chord card
