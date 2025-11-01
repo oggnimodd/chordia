@@ -5,19 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chord Progression Helper</title>
     <style>
-      /* --- Color & Style Variables --- */
       :root {
         --bg-color: #1a1a1a;
         --card-bg: #2a2a2a;
         --text-color: #ffffff;
         --roman-color: #999999;
 
-        /* Chord Quality Colors - High contrast */
-        --major-color: #00d4ff; /* Bright cyan */
-        --minor-color: #ff6b9d; /* Bright pink */
-        --secondary-color: #00ff88; /* Bright green */
+        --major-color: #00d4ff;
+        --minor-color: #ff6b9d;
+        --secondary-color: #00ff88;
 
-        /* Effects */
         --shadow-color: rgba(0, 0, 0, 0.6);
       }
 
@@ -40,7 +37,6 @@
         padding: 20px;
       }
 
-      /* --- Main App --- */
       .app {
         text-align: center;
         max-width: 1200px;
@@ -48,7 +44,6 @@
         padding-top: 20px;
       }
 
-      /* --- Key Selector Dropdown --- */
       .key-selector {
         font-size: 1.3em;
         font-weight: 600;
@@ -70,7 +65,6 @@
         text-align-last: center;
       }
 
-      /* --- Toggle Button --- */
       .toggle-container {
         display: flex;
         flex-direction: row;
@@ -101,9 +95,6 @@
         color: var(--bg-color);
       }
 
-  
-
-      /* --- Chords Display Area --- */
       .chords-display {
         display: flex;
         gap: 20px;
@@ -122,13 +113,13 @@
         flex: 1;
         min-width: 140px;
         max-width: 180px;
+        cursor: pointer;
       }
 
-    
-
-      
-
-      
+      .chord-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      }
 
       .roman-numeral {
         font-size: 1.4em;
@@ -145,7 +136,6 @@
         text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       }
 
-      /* --- CHANGE 1: Styling for the new chord notes element --- */
       .chord-notes {
         margin-top: 15px;
         font-size: 1em;
@@ -157,7 +147,23 @@
         word-spacing: 10px;
       }
 
-      /* --- MAJOR CHORDS --- */
+  
+
+      .chord-card.matching {
+        border: 3px solid #00cc77;
+        background: #353535;
+        box-shadow: 0 12px 30px rgba(0, 204, 119, 0.4);
+        transform: scale(1.02);
+      }
+
+      .chord-card.non-matching {
+        opacity: 0.4;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transform: scale(0.98);
+      }
+
+      
+
       .chord-card.chord-major {
         border-top-color: var(--major-color);
       }
@@ -173,7 +179,6 @@
         color: #cccccc;
       }
 
-      /* --- MINOR CHORDS --- */
       .chord-card.chord-minor {
         border-top-color: var(--minor-color);
       }
@@ -190,7 +195,6 @@
         color: #aaaaaa;
       }
 
-      /* --- SECONDARY DOMINANT --- */
       .chord-card.chord-secondary {
         border-top-color: var(--secondary-color);
       }
@@ -205,7 +209,6 @@
         color: #bbbbbb;
       }
 
-      /* --- Media Queries --- */
       @media (min-width: 769px) {
         .chords-display {
           flex-wrap: nowrap;
@@ -264,7 +267,6 @@
         transform: none !important;
         animation: none !important;
       }
-      
     </style>
   </head>
   <body>
@@ -287,37 +289,38 @@
         <button id="secondary-toggle" class="toggle-button">V/vi</button>
       </div>
 
+      
+
       <div id="chords-display" class="chords-display">
-        <!-- CHANGE 2: Added the chord-notes div to each card -->
         <div class="chord-card">
           <div class="roman-numeral">I</div>
           <div class="chord-name">C</div>
-          <div class="chord-notes">C E G</div>
+          <div class="chord-notes"></div>
         </div>
         <div class="chord-card">
           <div class="roman-numeral">ii</div>
           <div class="chord-name">Dm</div>
-          <div class="chord-notes">D F A</div>
+          <div class="chord-notes"></div>
         </div>
         <div class="chord-card" id="iii-card">
           <div class="roman-numeral">iii</div>
           <div class="chord-name">Em</div>
-          <div class="chord-notes">E G B</div>
+          <div class="chord-notes"></div>
         </div>
         <div class="chord-card">
           <div class="roman-numeral">IV</div>
           <div class="chord-name">F</div>
-          <div class="chord-notes">F A C</div>
+          <div class="chord-notes"></div>
         </div>
         <div class="chord-card">
           <div class="roman-numeral">V</div>
           <div class="chord-name">G</div>
-          <div class="chord-notes">G B D</div>
+          <div class="chord-notes"></div>
         </div>
         <div class="chord-card">
           <div class="roman-numeral">vi</div>
           <div class="chord-name">Am</div>
-          <div class="chord-notes">A C E</div>
+          <div class="chord-notes"></div>
         </div>
       </div>
     </div>
@@ -355,18 +358,72 @@
       const chordCards = document.querySelectorAll(".chord-card");
       const iiiCard = document.getElementById("iii-card");
       const secondaryToggle = document.getElementById("secondary-toggle");
+      let selectedNote = null;
 
-      // --- CHANGE 3: New helper function to calculate chord notes ---
+      // --- HELPER FUNCTIONS ---
       function getChordNotes(rootNote, quality) {
         const rootIndex = notes.indexOf(rootNote);
-        const thirdIndex = (rootIndex + (quality === "major" ? 4 : 3)) % 12;
+        const thirdInterval = quality === "major" ? 4 : 3;
+        const thirdIndex = (rootIndex + thirdInterval) % 12;
         const fifthIndex = (rootIndex + 7) % 12;
 
-        const root = notes[rootIndex];
-        const third = notes[thirdIndex];
-        const fifth = notes[fifthIndex];
+        return [notes[rootIndex], notes[thirdIndex], notes[fifthIndex]];
+      }
 
-        return `${root} ${third} ${fifth}`;
+  
+
+      function highlightChordsContainingNote(note) {
+        if (!note) return;
+
+        chordCards.forEach((card) => {
+          const chordNameEl = card.querySelector(".chord-name");
+          const chordName = chordNameEl.textContent;
+          const rootNote = chordName.replace("m", "");
+          
+          // Get the actual notes in this chord
+          const chordNotesEl = card.querySelector(".chord-notes");
+          const chordNotesText = chordNotesEl.textContent;
+          const chordNotes = chordNotesText.split(" ").filter(n => n);
+          
+          // Remove previous highlighting
+          card.classList.remove("matching", "non-matching");
+
+          // Highlight if the selected note is the root of this chord 
+          // or if the selected note is contained in this chord's notes
+          if (rootNote === note || chordNotes.includes(note)) {
+            card.classList.add("matching");
+          } else {
+            card.classList.add("non-matching");
+          }
+        });
+      }
+
+      function clearNoteSelection() {
+        selectedNote = null;
+
+        // Remove highlighting from all cards
+        chordCards.forEach((card) => {
+          card.classList.remove("matching", "non-matching");
+        });
+      }
+
+      function handleChordClick(event) {
+        const card = event.currentTarget;
+        const chordNameEl = card.querySelector(".chord-name");
+        const chordName = chordNameEl.textContent;
+        
+        // Extract root note (remove 'm' for minor chords)
+        const rootNote = chordName.replace("m", "");
+        
+        // If clicking the same chord, deselect it
+        if (selectedNote === rootNote) {
+          clearNoteSelection();
+          return;
+        }
+
+        // Update state and highlight
+        selectedNote = rootNote;
+        highlightChordsContainingNote(rootNote);
       }
 
       // --- CORE LOGIC ---
@@ -374,6 +431,7 @@
         const selectedKey = keySelect.value;
         const rootIndex = notes.indexOf(selectedKey);
 
+        // Calculate scale notes
         const scaleNotes = [];
         let currentIndex = rootIndex;
         scaleNotes.push(notes[currentIndex]);
@@ -382,26 +440,34 @@
           scaleNotes.push(notes[currentIndex]);
         }
 
+        // Update each chord card
         chordCards.forEach((card, i) => {
           const rootNote = scaleNotes[i];
           const quality = chordQualities[i];
+          const chordNotesArray = getChordNotes(rootNote, quality);
 
+          // Update roman numeral and chord name
           card.querySelector(".roman-numeral").textContent = romanNumerals[i];
           card.querySelector(".chord-name").textContent =
             rootNote + chordSuffixes[i];
-          // Update the chord notes display
-          card.querySelector(".chord-notes").textContent = getChordNotes(
-            rootNote,
-            quality,
-          );
 
+          // Update chord notes with plain text
+          card.querySelector(".chord-notes").textContent =
+            chordNotesArray.join(" ");
+
+          // Reset card class
           card.className = `chord-card chord-${quality}`;
         });
 
+        // Ensure iii card keeps its ID
         iiiCard.id = "iii-card";
+
+        // Re-apply highlighting if a note was selected
+        if (selectedNote) {
+          highlightChordsContainingNote(selectedNote);
+        }
       }
 
-      // --- Toggle function for the V/vi secondary dominant ---
       function toggleSecondaryDominant() {
         const romanEl = iiiCard.querySelector(".roman-numeral");
         const nameEl = iiiCard.querySelector(".chord-name");
@@ -412,26 +478,49 @@
           // Show Secondary Dominant (V/vi)
           romanEl.textContent = "V/vi";
           nameEl.textContent = rootNote;
-          notesEl.textContent = getChordNotes(rootNote, "major"); // Update notes to major
+          const chordNotesArray = getChordNotes(rootNote, "major");
+          notesEl.textContent = chordNotesArray.join(" ");
           iiiCard.className = "chord-card chord-secondary";
-          iiiCard.id = "iii-card";
-          secondaryToggle.textContent = "V/vi";
         } else {
           // Show diatonic iii
           romanEl.textContent = "iii";
           nameEl.textContent = rootNote + "m";
-          notesEl.textContent = getChordNotes(rootNote, "minor"); // Update notes to minor
+          const chordNotesArray = getChordNotes(rootNote, "minor");
+          notesEl.textContent = chordNotesArray.join(" ");
           iiiCard.className = "chord-card chord-minor";
-          iiiCard.id = "iii-card";
-          secondaryToggle.textContent = "V/vi";
+        }
+
+        iiiCard.id = "iii-card";
+
+        // Re-apply highlighting if a note was selected
+        if (selectedNote) {
+          highlightChordsContainingNote(selectedNote);
         }
       }
 
       // --- EVENT LISTENERS ---
       keySelect.addEventListener("change", updateChords);
-      secondaryToggle.addEventListener("click", function() {
+
+      secondaryToggle.addEventListener("click", function () {
         secondaryToggle.classList.toggle("active");
         toggleSecondaryDominant();
+      });
+
+      // Add click listeners to each chord card
+      chordCards.forEach(card => {
+        card.addEventListener("click", handleChordClick);
+      });
+
+      
+
+      // Add click-outside listener to clear selection
+      document.addEventListener("click", function(event) {
+        // Check if click is outside any chord card
+        const isChordCard = event.target.closest(".chord-card");
+        
+        if (!isChordCard && selectedNote) {
+          clearNoteSelection();
+        }
       });
 
       // --- INITIALIZATION ---
