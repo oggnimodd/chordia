@@ -166,6 +166,12 @@
         box-shadow: 0 12px 30px rgba(0, 204, 119, 0.4);
       }
 
+      .chord-card.selected {
+        border: 3px solid #ffaa00;
+        background: #3a3525;
+        box-shadow: 0 12px 30px rgba(255, 170, 0, 0.4);
+      }
+
       .chord-card.non-matching {
         opacity: 0.4;
         border: 3px solid rgba(255, 255, 255, 0.05);
@@ -397,7 +403,7 @@
 
   
 
-      function highlightChordsContainingNote(note) {
+      function highlightChordsContainingNote(note, clickedCard = null) {
         if (!note) return;
 
         chordCards.forEach((card) => {
@@ -413,15 +419,28 @@
           );
           
           // Remove previous highlighting
-          card.classList.remove("matching", "non-matching");
+          card.classList.remove("matching", "non-matching", "selected");
           noteSpans.forEach((span) => span.classList.remove("highlighted"));
 
+          // Check if this is the clicked card
+          const isClickedCard = clickedCard && card === clickedCard;
+          
           // Check if the selected note is the root of this chord 
           // or if the selected note is contained in this chord's notes
           const isRootNote = notesAreEquivalent(rootNote, note);
           const containsNote = chordNotes.some(chordNote => notesAreEquivalent(chordNote, note));
           
-          if (isRootNote || containsNote) {
+          if (isClickedCard) {
+            // This is the card that was clicked
+            card.classList.add("selected");
+            // Highlight the specific notes that match
+            noteSpans.forEach((span) => {
+              if (notesAreEquivalent(span.dataset.note, note)) {
+                span.classList.add("highlighted");
+              }
+            });
+          } else if (isRootNote || containsNote) {
+            // Other chords that contain the note
             card.classList.add("matching");
             // Highlight the specific notes that match
             noteSpans.forEach((span) => {
@@ -440,7 +459,7 @@
 
         // Remove highlighting from all cards and notes
         chordCards.forEach((card) => {
-          card.classList.remove("matching", "non-matching");
+          card.classList.remove("matching", "non-matching", "selected");
           const noteSpans = card.querySelectorAll(".note");
           noteSpans.forEach((span) => span.classList.remove("highlighted"));
         });
@@ -462,7 +481,7 @@
 
         // Update state and highlight
         selectedNote = rootNote;
-        highlightChordsContainingNote(rootNote);
+        highlightChordsContainingNote(rootNote, card);
       }
 
       function getViiNote() {
@@ -572,7 +591,7 @@
         
         // Update state and highlight
         selectedNote = viiNote;
-        highlightChordsContainingNote(viiNote);
+        highlightChordsContainingNote(viiNote, null);
       });
 
       fullscreenToggle.addEventListener("click", function () {
