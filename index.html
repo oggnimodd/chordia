@@ -34,7 +34,7 @@
         color: var(--text-color);
         min-height: 100vh;
         margin: 0;
-        padding: 20px;
+        padding: 10px;
       }
 
       .app {
@@ -45,9 +45,9 @@
       }
 
       .key-selector {
-        font-size: 1.3em;
+        font-size: 1em;
         font-weight: 600;
-        padding: 15px 20px;
+        padding: 10px 20px;
         border-radius: 12px;
         border: none;
         background: var(--bg-color);
@@ -75,9 +75,9 @@
       }
 
       .toggle-button {
-        font-size: 1.1em;
+        font-size: 1em;
         font-weight: 600;
-        padding: 15px 25px;
+        padding: 10px 20px;
         border-radius: 12px;
         border: none;
         background: var(--bg-color);
@@ -106,7 +106,7 @@
         background: var(--bg-color);
         border-radius: 15px;
         padding: 25px 0px;
-        border-top: 6px solid transparent;
+        border: 3px solid transparent;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
@@ -149,6 +149,7 @@
         border-radius: 4px;
         transition: all 0.2s ease;
         display: inline-block;
+        font-weight: 600;
       }
 
       .note.highlighted {
@@ -163,19 +164,16 @@
         border: 3px solid #00cc77;
         background: #353535;
         box-shadow: 0 12px 30px rgba(0, 204, 119, 0.4);
-        transform: scale(1.02);
       }
 
       .chord-card.non-matching {
         opacity: 0.4;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        transform: scale(0.98);
+        border: 3px solid rgba(255, 255, 255, 0.05);
       }
 
       
 
       .chord-card.chord-major {
-        border-top-color: var(--major-color);
       }
       .chord-card.chord-major .chord-name {
         color: var(--major-color);
@@ -190,7 +188,6 @@
       }
 
       .chord-card.chord-minor {
-        border-top-color: var(--minor-color);
       }
       .chord-card.chord-minor .chord-name {
         color: var(--minor-color);
@@ -206,7 +203,6 @@
       }
 
       .chord-card.chord-secondary {
-        border-top-color: var(--secondary-color);
       }
       .chord-card.chord-secondary .chord-name {
         color: var(--secondary-color);
