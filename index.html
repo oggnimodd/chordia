@@ -147,6 +147,19 @@
         word-spacing: 10px;
       }
 
+      .note {
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        display: inline-block;
+      }
+
+      .note.highlighted {
+        background: var(--secondary-color);
+        color: var(--bg-color);
+        font-weight: 700;
+      }
+
   
 
       .chord-card.matching {
@@ -370,6 +383,12 @@
         return [notes[rootIndex], notes[thirdIndex], notes[fifthIndex]];
       }
 
+      function createNoteSpans(notesArray) {
+        return notesArray
+          .map((note) => `<span class="note" data-note="${note}">${note}</span>`)
+          .join(" ");
+      }
+
   
 
       function highlightChordsContainingNote(note) {
@@ -380,18 +399,27 @@
           const chordName = chordNameEl.textContent;
           const rootNote = chordName.replace("m", "");
           
-          // Get the actual notes in this chord
+          // Get the note spans in this chord
           const chordNotesEl = card.querySelector(".chord-notes");
-          const chordNotesText = chordNotesEl.textContent;
-          const chordNotes = chordNotesText.split(" ").filter(n => n);
+          const noteSpans = chordNotesEl.querySelectorAll(".note");
+          const chordNotes = Array.from(noteSpans).map(
+            (span) => span.dataset.note
+          );
           
           // Remove previous highlighting
           card.classList.remove("matching", "non-matching");
+          noteSpans.forEach((span) => span.classList.remove("highlighted"));
 
           // Highlight if the selected note is the root of this chord 
           // or if the selected note is contained in this chord's notes
           if (rootNote === note || chordNotes.includes(note)) {
             card.classList.add("matching");
+            // Highlight the specific notes that match
+            noteSpans.forEach((span) => {
+              if (span.dataset.note === note) {
+                span.classList.add("highlighted");
+              }
+            });
           } else {
             card.classList.add("non-matching");
           }
@@ -401,9 +429,11 @@
       function clearNoteSelection() {
         selectedNote = null;
 
-        // Remove highlighting from all cards
+        // Remove highlighting from all cards and notes
         chordCards.forEach((card) => {
           card.classList.remove("matching", "non-matching");
+          const noteSpans = card.querySelectorAll(".note");
+          noteSpans.forEach((span) => span.classList.remove("highlighted"));
         });
       }
 
@@ -451,9 +481,9 @@
           card.querySelector(".chord-name").textContent =
             rootNote + chordSuffixes[i];
 
-          // Update chord notes with plain text
-          card.querySelector(".chord-notes").textContent =
-            chordNotesArray.join(" ");
+          // Update chord notes with note spans
+          card.querySelector(".chord-notes").innerHTML =
+            createNoteSpans(chordNotesArray);
 
           // Reset card class
           card.className = `chord-card chord-${quality}`;
@@ -479,14 +509,14 @@
           romanEl.textContent = "V/vi";
           nameEl.textContent = rootNote;
           const chordNotesArray = getChordNotes(rootNote, "major");
-          notesEl.textContent = chordNotesArray.join(" ");
+          notesEl.innerHTML = createNoteSpans(chordNotesArray);
           iiiCard.className = "chord-card chord-secondary";
         } else {
           // Show diatonic iii
           romanEl.textContent = "iii";
           nameEl.textContent = rootNote + "m";
           const chordNotesArray = getChordNotes(rootNote, "minor");
-          notesEl.textContent = chordNotesArray.join(" ");
+          notesEl.innerHTML = createNoteSpans(chordNotesArray);
           iiiCard.className = "chord-card chord-minor";
         }
 
